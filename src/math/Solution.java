@@ -23,7 +23,7 @@ public class Solution {
 
     public static void main(String[] args) {
         rainbowPrint("Hello! :)");
-        rainbowPrint("The program will help you solve some mathematical problems.");
+        rainbowPrint("The MathSolver will help you solve some mathematical problems.");
         resource.getResources();
 
         application.Appl.run();
