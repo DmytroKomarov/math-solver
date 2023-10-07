@@ -3,6 +3,8 @@ package math;
 import task.Task;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
 
@@ -28,6 +30,8 @@ public class Solver {
             solve = getPrimeFactors(taskParams);
         } else if (taskCode.equals("GetGreatestCommonFactor")) {
             solve = getGreatestCommonFactor(taskParams);
+        } else if (taskCode.equals("GetHiddenDigits")) {
+            solve = getHiddenDigits(taskParams);
         } else {
             solve = "Error: MS-0001. Unknown task";
         }
@@ -213,6 +217,48 @@ public class Solver {
     private static int findLCM(int num1, int num2) {
         return (num1 * num2) / findGCD(num1, num2);
     }
+
+    private static String getHiddenDigits(Map<String, String> taskParams) {
+        String solve = new String();
+        String number = taskParams.get("number");//123* 1*3*
+        String divisor = taskParams.get("divisor");
+
+        String regex = "\\*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(number);
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        if (count==0){
+            return "Error: MS-0004. Missing *-symbol";
+        }
+        String numbersA = new String();
+        String digitsA = new String();
+        String numbersB = new String();
+        String digitsB = new String();
+        int numberA;
+        int numberB;
+        for (int i = 1; i < 9; i++) {
+            numberA = Integer.parseInt(number.replaceAll( "\\*", String.valueOf(i)));
+            if (numberA % i == 0) {
+                digitsA = digitsA + i + ", ";
+                numbersA = numbersA + String.valueOf(numberA) + ", ";
+            }
+        }
+        if (digitsA.length() > 0) {
+            digitsA = digitsA.substring(0, digitsA.length() - 2);
+            numbersA = numbersA.substring(0, numbersA.length() - 2);
+        }
+        if (count==1) {
+            solve = "Можливі варіанти скритих цифр: " + digitsA + (char) 10 + (char) 13 +
+                    "Можливі варіанти чисел: " + numbersA;
+        }
+
+        return solve;
+
+    }
+
 
 
 
