@@ -2,6 +2,7 @@ package math;
 
 import task.Task;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -242,13 +243,15 @@ public class Solver {
         String digitsA = new String();
         String numbersB = new String();
         String digitsB = new String();
-        int numberA = 0;
+        Double numberA = 0.0;
         int numberB = 0;
         for (int i = 0; i <= 9; i++) {
-            numberA = Integer.parseInt(number.replaceAll(regex, String.valueOf(i)));
+            numberA = Double.parseDouble(number.replaceAll(regex, String.valueOf(i)));
             if (numberA % Integer.parseInt(divisor) == 0) {
                 digitsA = digitsA + i + ", ";
-                numbersA = numbersA + String.valueOf(numberA) + ", ";
+                numbersA = numbersA + new BigDecimal(numberA).toPlainString() /*String.valueOf(numberA)*/ + ", ";
+
+
             }
         }
         if (digitsA.length() > 0) {
@@ -283,10 +286,9 @@ public class Solver {
         if (index == hiddenNumber.length()) {
 
             if (!currentDigits.contains("*")) {
-                int num = Integer.parseInt(currentDigits);
+                double num = Double.parseDouble(currentDigits);
                 if (num % divisor == 0) {
-                    dg = dg + "Цифри: " + getMaskDigits(String.valueOf(num),hiddenNumber) + ". Число: " + num + (char) 10 + (char) 13;
-
+                    dg = dg + "Цифри: " + getMaskDigits(new BigDecimal(num).toPlainString(),hiddenNumber) + ". Число: " + new BigDecimal(num).toPlainString() + (char) 10 + (char) 13;
 
                 }
             }
