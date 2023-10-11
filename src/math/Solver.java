@@ -2,6 +2,8 @@ package math;
 
 import task.Task;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +11,9 @@ import java.util.regex.Pattern;
 import static java.lang.Math.abs;
 
 public class Solver {
+    private static String nm = new String();
+    private static String dg = new String();
+    public static boolean isHidden;
 
     public static String getSolve(Task task) {
         String solve = new String();
@@ -172,7 +177,7 @@ public class Solver {
 
     private static String getGreatestCommonFactor(Map<String, String> taskParams) {
         String solve = new String();
-        String numbersString = taskParams.get("numbers").replaceAll(" ",",");
+        String numbersString = taskParams.get("numbers").replaceAll(" ", ",");
 
         int[] numbers = parseIntArray(numbersString);
 
@@ -230,18 +235,18 @@ public class Solver {
         while (matcher.find()) {
             count++;
         }
-        if (count==0){
+        if (count == 0) {
             return "Error: MS-0004. Missing *-symbol";
         }
         String numbersA = new String();
         String digitsA = new String();
         String numbersB = new String();
         String digitsB = new String();
-        int numberA;
-        int numberB;
-        for (int i = 1; i < 9; i++) {
-            numberA = Integer.parseInt(number.replaceAll( "\\*", String.valueOf(i)));
-            if (numberA % i == 0) {
+        int numberA = 0;
+        int numberB = 0;
+        for (int i = 0; i <= 9; i++) {
+            numberA = Integer.parseInt(number.replaceAll(regex, String.valueOf(i)));
+            if (numberA % Integer.parseInt(divisor) == 0) {
                 digitsA = digitsA + i + ", ";
                 numbersA = numbersA + String.valueOf(numberA) + ", ";
             }
@@ -250,18 +255,76 @@ public class Solver {
             digitsA = digitsA.substring(0, digitsA.length() - 2);
             numbersA = numbersA.substring(0, numbersA.length() - 2);
         }
-        if (count==1) {
+
+        if (count == 1) {
             solve = "Можливі варіанти скритих цифр: " + digitsA + (char) 10 + (char) 13 +
                     "Можливі варіанти чисел: " + numbersA;
         }
+        if (count > 1) {
+            dg = "";
+            nm = "";
+            findMissingDigits(number, Integer.parseInt(divisor));
+            solve = "Однакова цифра:" + (char) 10 + (char) 13 +
+                    "Можливі варіанти скритих цифр: " + digitsA + (char) 10 + (char) 13 +
+                    "Можливі варіанти чисел: " + numbersA + (char) 10 + (char) 13 + (char) 10 + (char) 13 +
+                    "Різні цифри:" + (char) 10 + (char) 13 +
+                    dg;
 
+        }
         return solve;
 
+    }
+
+    private static void findMissingDigits(String hiddenNumber, int divisor) {
+        findMissingDigitsRecursive(hiddenNumber, divisor, 0, "");
+    }
+
+    private static void findMissingDigitsRecursive(String hiddenNumber, int divisor, int index, String currentDigits) {
+        if (index == hiddenNumber.length()) {
+
+            if (!currentDigits.contains("*")) {
+                int num = Integer.parseInt(currentDigits);
+                if (num % divisor == 0) {
+                    dg = dg + "Цифри: " + getMaskDigits(String.valueOf(num),hiddenNumber) + ". Число: " + num + (char) 10 + (char) 13;
+
+
+                }
+            }
+        } else {
+            char currentChar = hiddenNumber.charAt(index);
+            if (currentChar == '*') {
+                isHidden=true;
+                for (int i = 0; i <= 9; i++) {
+                    findMissingDigitsRecursive(hiddenNumber, divisor, index + 1, currentDigits + i);
+                }
+            } else {
+                isHidden=false;
+                findMissingDigitsRecursive(hiddenNumber, divisor, index + 1, currentDigits + currentChar);
+            }
+        }
+    }
+    private static String getMaskDigits(String number,String mask){
+        StringBuilder maskedNumbers = new StringBuilder();
+        boolean shouldAddComma = false;
+
+        for (int i = 0; i < mask.length(); i++) {
+            char maskChar = mask.charAt(i);
+
+            if (maskChar == '*') {
+                char numChar = number.charAt(i);
+                int digit = Character.getNumericValue(numChar);
+                maskedNumbers.append(digit);
+                maskedNumbers.append(", ");
+            }
+        }
+        maskedNumbers.delete(maskedNumbers.length()-2,maskedNumbers.length());
+        return maskedNumbers.toString();
     }
 
 
 
 
 
-
 }
+
+
